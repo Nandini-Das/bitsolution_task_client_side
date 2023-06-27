@@ -13,6 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { styled } from '@mui/system';
 import Swal from 'sweetalert2';
+import { Link } from 'react-router-dom';
 
 const StyledTable = styled(Table)`
   border-collapse: collapse;
@@ -47,10 +48,7 @@ const AllProduct = () => {
             });
     }, []);
 
-    const handleUpdate = (productId) => {
-        // Handle update logic for the product with the given productId
-        console.log(`Update product with ID: ${productId}`);
-    };
+   
 
     const handleDelete = (product) => {
         Swal.fire({
@@ -118,9 +116,9 @@ const AllProduct = () => {
                                         variant="outlined"
                                         color="primary"
                                         startIcon={<EditIcon />}
-                                        onClick={() => handleUpdate(product._id)}
+                                       
                                     >
-                                        Update
+                                      <Link to={`/updateProduct/${product._id}`}>Update</Link>
                                     </Button>
                                     {' '}
                                     <Button
