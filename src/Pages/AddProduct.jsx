@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
-
-const brands = ['Brand A', 'Brand B', 'Brand C'];
-const categories = ['Category A', 'Category B', 'Category C'];
-const groups = ['Group A', 'Group B', 'Group C'];
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const AddProduct = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:5000/allProducts')
+      .then((response) => {
+        setProducts(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  }, []);
+
   const [formData, setFormData] = useState({
+    product: '',
     brandName: '',
     productGroup: '',
     category: '',
@@ -29,11 +41,26 @@ const AddProduct = () => {
     }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Handle form submission here
-    console.log(formData);
+  const handleSubmit = () => {
+    axios.post('http://localhost:5000/addedProduct', formData)
+      .then((result) => {
+        console.log( result);
+        if (result.data.insertedID > 1) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Product added successfully',
+          })
+        }
+      })
+      .catch((error) => {
+        console.error('Error submitting form data:', error);
+      });
   };
+
+  const brands = Array.from(new Set(products.map((product) => product.brand_name)));
+  const groups = Array.from(new Set(products.map((product) => product.product_group)));
+  const categories = Array.from(new Set(products.map((product) => product.product_category)));
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -43,6 +70,16 @@ const AddProduct = () => {
             <Typography variant="h4" align="center" gutterBottom>
               Add Product
             </Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Product Name"
+              name="product"
+              value={formData.product}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField

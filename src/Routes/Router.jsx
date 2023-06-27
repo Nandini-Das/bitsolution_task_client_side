@@ -6,6 +6,7 @@ import {
 import Main from "../Layout/Main";
 import Dashboard from "../Pages/Dashboard";
 import AddProduct from "../Pages/AddProduct";
+import AllProduct from "../Pages/AllProduct";
 
   
   export  const router = createBrowserRouter([
@@ -20,6 +21,10 @@ import AddProduct from "../Pages/AddProduct";
         {
             path: "/addProduct",
             element: <AddProduct></AddProduct>,
+        },
+        {
+            path: "/addedProduct",
+            element: <AllProduct></AllProduct>
         },
       ]
     },

@@ -75,7 +75,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 );
 
-export default function MiniDrawer() {
+export default function SideNavigation() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
 
@@ -103,7 +103,7 @@ export default function MiniDrawer() {
                        <Link to="/addProduct">Add Product</Link>
                     </ListItem>
                     <ListItem>
-                        <Link to="/addProduct">All Product</Link>
+                        <Link to="/addedProduct">All Product</Link>
                     </ListItem>
                 </List>
                 <Divider />
