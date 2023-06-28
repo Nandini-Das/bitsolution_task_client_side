@@ -43,7 +43,7 @@ const UpdateProduct = () => {
         formDataToSend.append('description', description);
         formDataToSend.append('picture', picture);
 
-        axios.put(`https://bitsolution-task-server-nandini-das.vercel.app/updateProduct/${product._id}`, formDataToSend)
+        axios.put(`https://bitsolution-task-server-nandini-das.vercel.app/${product._id}`, formDataToSend)
             .then((result) => {
                 console.log(result);
                 if (result.data.message === 'Product updated successfully') {

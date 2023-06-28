@@ -81,7 +81,11 @@ const AddProduct = () => {
             .catch((error) => {
 
                 console.error('Error submitting form data:', error.response);
-                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to add product',
+                });
             });
 
     };

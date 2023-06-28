@@ -21,21 +21,21 @@ import Home from "../Pages/Home";
             element:<Home></Home>
         },
         {
-            path: "/dashboard",
+            path: "dashboard",
             element:<Dashboard></Dashboard>,
         },
         {
-            path: "/addProduct",
+            path: "addProduct",
             element: <AddProduct></AddProduct>,
         },
         {
-            path: "/addedProduct",
+            path: "addedProduct",
             element: <AllProduct></AllProduct>,
         },
         {
-            path: "/updateProduct/:id",
+            path: "updateProduct/:id",
             element: <UpdateProduct></UpdateProduct>,
-            loader: ({params}) => fetch(`https://bitsolution-task-server-nandini-das.vercel.app/addedProduct/${params.id}`),
+            loader: ({params}) => fetch(`https://bitsolution-task-server-nandini-das.vercel.app/${params.id}`),
         },
       ]
     },

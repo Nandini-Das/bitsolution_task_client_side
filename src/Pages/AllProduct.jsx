@@ -58,7 +58,7 @@ const AllProduct = () => {
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`https://bitsolution-task-server-nandini-das.vercel.app/addedProduct/${product._id}`, {
+                fetch(`https://bitsolution-task-server-nandini-das.vercel.app/${product._id}`, {
                     method: 'DELETE'
                 })
                     .then(res => res.json())
@@ -122,7 +122,7 @@ const AllProduct = () => {
                                 <TableCell>{product.description}</TableCell>
                                 <TableCell>
                                     {product.picture && (
-                                        <img src={`https://bitsolution-task-server-nandini-das.vercel.app/uploads/${product.picture}`} alt="Product" style={{ width: '100px' }} />
+                                        <img src={`https://bitsolution-task-server-nandini-das.vercel.app/${product.picture}`} alt="Product" style={{ width: '100px' }} />
                                     )}
                                 </TableCell>
                                 <TableCell>
@@ -131,7 +131,7 @@ const AllProduct = () => {
                                         color="primary"
                                         startIcon={<EditIcon />}
                                     >
-                                        <Link to={`/updateProduct/${product._id}`}>Update</Link>
+                                        <Link to={`updateProduct/${product._id}`}>Update</Link>
                                     </Button>
                                     {' '}
                                     <Button
