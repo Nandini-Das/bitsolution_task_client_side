@@ -109,7 +109,7 @@ export default function SideNavigation() {
                 <Divider />
                 <List>
                     <ListItem>
-                        <Link to="/addProduct" >Home</Link>
+                        <Link to="/" >Home</Link>
                     </ListItem>
                 </List>
             </Drawer>
