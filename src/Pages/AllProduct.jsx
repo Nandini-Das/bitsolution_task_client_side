@@ -58,7 +58,7 @@ const AllProduct = () => {
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`https://bitsolution-task-server-nandini-das.vercel.app/${product._id}`, {
+                fetch(`https://bitsolution-task-server-nandini-das.vercel.app/addedProduct/${product._id}`, {
                     method: 'DELETE'
                 })
                     .then(res => res.json())
@@ -113,7 +113,7 @@ const AllProduct = () => {
                     <TableBody>
                         {products.map((product) => (
                             <TableRow key={product._id}>
-                                <TableCell>{product.product}</TableCell>
+                                <TableCell>{product.name}</TableCell>
                                 <TableCell>{product.brandName}</TableCell>
                                 <TableCell>{product.category}</TableCell>
                                 <TableCell>{product.unit}</TableCell>
@@ -121,8 +121,8 @@ const AllProduct = () => {
                                 <TableCell>{product.salePrice}</TableCell>
                                 <TableCell>{product.description}</TableCell>
                                 <TableCell>
-                                    {product.picture && (
-                                        <img src={`https://bitsolution-task-server-nandini-das.vercel.app/${product.picture}`} alt="Product" style={{ width: '100px' }} />
+                                    {product.image && (
+                                        <img src={`${product.image}`} alt="Product" style={{ width: '100px' }} />
                                     )}
                                 </TableCell>
                                 <TableCell>
@@ -131,7 +131,7 @@ const AllProduct = () => {
                                         color="primary"
                                         startIcon={<EditIcon />}
                                     >
-                                        <Link to={`updateProduct/${product._id}`}>Update</Link>
+                                        <Link to={`/updateProduct/${product._id}`}>Update</Link>
                                     </Button>
                                     {' '}
                                     <Button

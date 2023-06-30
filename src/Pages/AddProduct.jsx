@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -11,6 +12,8 @@ import { Link } from 'react-router-dom';
 import { AppBar, Toolbar } from '@mui/material';
 
 const AddProduct = () => {
+    const img_hosting_token = 'bad0a0d3cc7ea65959919397f864ab82';
+    const img_hosting_url = `https://api.imgbb.com/1/upload?key=${img_hosting_token}`;
 
     const [products, setProducts] = useState([]);
 
@@ -25,69 +28,52 @@ const AddProduct = () => {
             });
     }, []);
 
-    const [formData, setFormData] = useState({
-        product: '',
-        brandName: '',
-        productGroup: '',
-        category: '',
-        unit: '',
-        purchasePrice: '',
-        salePrice: '',
-        description: '',
-        picture: null,
-    });
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            [name]: value,
-        }));
-    };
-
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            picture: file,
-        }));
-    };
-
-    const handleSubmit = (e) => {
-        event.preventDefault();
-        const formDataToSend = new FormData();
-        formDataToSend.append('product', formData.product);
-        formDataToSend.append('brandName', formData.brandName);
-        formDataToSend.append('productGroup', formData.productGroup);
-        formDataToSend.append('category', formData.category);
-        formDataToSend.append('unit', formData.unit);
-        formDataToSend.append('purchasePrice', formData.purchasePrice);
-        formDataToSend.append('salePrice', formData.salePrice);
-        formDataToSend.append('description', formData.description);
-        formDataToSend.append('picture', formData.picture);
-
-        axios
-            .post('https://bitsolution-task-server-nandini-das.vercel.app/addedProduct', formDataToSend)
-            .then((result) => {
-                console.log(result.data);
-                if (result.data.message === 'Product added successfully') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Product added successfully',
+    const onSubmit = (data) => {
+        const formData = new FormData();
+        formData.append('image', data.picture[0]);
+        fetch(img_hosting_url, {
+            method: 'POST',
+            body: formData,
+        })
+            .then((res) => res.json())
+            .then((imgResponse) => {
+                if (imgResponse.success) {
+                    const imgURL = imgResponse.data.display_url;
+                    const { productName, brandName, productGroup, category, unit, purchasePrice, salePrice, description } = data;
+                    const newItem = {
+                    
+                        name: productName,
+                        brandName,
+                        productGroup,
+                        category,
+                        unit,
+                        purchasePrice: parseFloat(purchasePrice),
+                        salePrice: parseFloat(salePrice),
+                        description,
+                        image: imgURL,
+                    };
+                    console.log(newItem);
+                    axios.post('https://bitsolution-task-server-nandini-das.vercel.app/addedProduct', newItem)
+                    .then((response) => {
+                      const data = response.data;
+                      console.log('after posting new item', data);
+                  
+                      if (data.message === 'Product added successfully') {
+                        reset();
+                        Swal.fire({
+                          position: 'top-end',
+                          icon: 'success',
+                          title: 'Item added successfully',
+                          showConfirmButton: false,
+                          timer: 1500,
+                        });
+                      }
                     });
+                  
                 }
-            })
-            .catch((error) => {
-
-                console.error('Error submitting form data:', error.response);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to add product',
-                });
             });
-
     };
 
     const brands = Array.from(new Set(products.map((product) => product.brand_name)));
@@ -101,14 +87,21 @@ const AddProduct = () => {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         TASK DEMO
                     </Typography>
-                    <Button component={Link} to="/dashboard" color="inherit">Dashboard</Button>
-                    <Button component={Link} to="/addProduct" color="inherit"> Add Product</Button>
-                    <Button component={Link} to="/addedProduct" color="inherit">All Product</Button>
+                    <Button component={Link} to="/dashboard" color="inherit">
+                        Dashboard
+                    </Button>
+                    <Button component={Link} to="/addProduct" color="inherit">
+                        {' '}
+                        Add Product
+                    </Button>
+                    <Button component={Link} to="/addedProduct" color="inherit">
+                        All Product
+                    </Button>
                 </Toolbar>
             </AppBar>
 
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Typography variant="h4" align="center" gutterBottom>
@@ -118,24 +111,18 @@ const AddProduct = () => {
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Product Name"
-                                name="product"
-                                value={formData.product}
-                                onChange={handleInputChange}
+                                {...register('productName', { required: true })}
                                 fullWidth
                                 margin="normal"
-                                required
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 select
                                 label="Brand Name"
-                                name="brandName"
-                                value={formData.brandName}
-                                onChange={handleInputChange}
+                                {...register('brandName', { required: true })}
                                 fullWidth
                                 margin="normal"
-                                required
                             >
                                 {brands.map((brand) => (
                                     <MenuItem key={brand} value={brand}>
@@ -148,12 +135,9 @@ const AddProduct = () => {
                             <TextField
                                 select
                                 label="Product Group"
-                                name="productGroup"
-                                value={formData.productGroup}
-                                onChange={handleInputChange}
+                                {...register('productGroup', { required: true })}
                                 fullWidth
                                 margin="normal"
-                                required
                             >
                                 {groups.map((group) => (
                                     <MenuItem key={group} value={group}>
@@ -166,12 +150,9 @@ const AddProduct = () => {
                             <TextField
                                 select
                                 label="Category"
-                                name="category"
-                                value={formData.category}
-                                onChange={handleInputChange}
+                                {...register('category', { required: true })}
                                 fullWidth
                                 margin="normal"
-                                required
                             >
                                 {categories.map((category) => (
                                     <MenuItem key={category} value={category}>
@@ -183,69 +164,66 @@ const AddProduct = () => {
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Unit"
-                                name="unit"
-                                value={formData.unit}
-                                onChange={handleInputChange}
+                                {...register('unit', { required: true })}
                                 fullWidth
                                 margin="normal"
-                                required
                             />
                         </Grid>
+
+
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Purchase Price/Unit"
-                                name="purchasePrice"
-                                value={formData.purchasePrice}
-                                onChange={handleInputChange}
+                                {...register('purchasePrice', { required: true })}
                                 fullWidth
                                 margin="normal"
-                                type="number"
-                                required
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Sale Price/Unit"
-                                name="salePrice"
-                                value={formData.salePrice}
-                                onChange={handleInputChange}
+                                {...register('salePrice', { required: true })}
                                 fullWidth
                                 margin="normal"
-                                type="number"
-                                required
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Description"
-                                name="description"
-                                value={formData.description}
-                                onChange={handleInputChange}
+                                {...register('description', { required: true })}
                                 fullWidth
-                                margin="normal"
                                 multiline
-                                required
+
+                                margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                name="picture"
-                                onChange={handleFileChange}
-                                required
-                            />
+                        <Grid item xs={12} sm={6}></Grid>
+                        <TextField
+                            label="Choose Image"
+                            name="picture"
+                            type="file"
+                            inputProps={{
+                                accept: 'image/*',
+                            }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            fullWidth
+                            margin="normal"
+                            {...register('picture', { required: true })}
+                            error={!!errors.picture}
+                            helperText={errors.picture ? 'Please choose an image' : ''}
+                        />
                         </Grid>
                         <Grid item xs={12} align="center">
                             <Button type="submit" variant="contained" color="primary">
                                 Submit
                             </Button>
                         </Grid>
-                    </Grid>
+
                 </form>
             </Box>
         </>
-
     );
 };
 
